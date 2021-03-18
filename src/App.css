@@ -1,0 +1,7 @@
+h1, h2, h3, h4, p, label, a {
+    font-family: 'Arial'
+}
+
+.num-input {
+    width: 50px;
+}
