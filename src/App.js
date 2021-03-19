@@ -6,11 +6,21 @@ class App extends React.Component {
 		super()
 		this.state = {
 			classes: [],
-			addingClass: false
+			addingClass: false,
+			addClassForm: {
+				error: "",
+				title: "",
+				desc: "",
+				minClasses: "",
+				maxClasses: "",
+				minCampers: "",
+				maxCampers: ""
+			}
 		}
 
-		this.addClass = this.addClass.bind(this);
-		this.stateSwitch = this.stateSwitch.bind(this)
+		this.stateSwitch = this.stateSwitch.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleAddClass = this.handleAddClass.bind(this);
 	}
 
 	async componentDidMount () {
@@ -28,13 +38,82 @@ class App extends React.Component {
 		this.setState( { [prop]: !this.state[prop] } )
 	}
 
-	async addClass() {
+	handleInputChange(e) {
+		let theForm = this.state.addClassForm
+		theForm[e.target.name] = e.target.value
+		theForm.error = ""
+		this.setState( { addClassForm: theForm } )
+	}
+
+	async handleAddClass() {
+		let theForm = this.state.addClassForm
 		let oldClasses = this.state.classes
+
+		//check for empty fields
+		if (theForm.desc==="") theForm.desc = "No description"
+		for (let prop in theForm) {
+			if (prop!=="error" && theForm[prop]==="") {
+				theForm.error = `Error: field "${prop}" is empty`
+				this.setState( { addClassForm: theForm } )
+				return
+			}
+		}
+
+		//check title and desc for length
+		if (theForm.title.length > 50) {
+			theForm.error = `Error: Title is ${theForm.title.length} chars, max is 50`
+			this.setState( { addClassForm: theForm } )
+			return
+		} else if (theForm.desc.length > 100) {
+			theForm.error = `Error: Description is ${theForm.title.length} chars, max is 100`
+			this.setState( { addClassForm: theForm } )
+			return
+		}
+
+		//make sure numbers input are non negative ints
+		let integers = [
+			Number(theForm.minClasses),
+			Number(theForm.maxClasses),
+			Number(theForm.minCampers),
+			Number(theForm.maxCampers)
+		]
+
+		for (let num of integers) {
+			if (isNaN(num) || num < 0 || num%1) {
+				theForm.error = `Error: a number field is not a non-negative integer`
+				this.setState( { addClassForm: theForm } )
+				return
+			}
+		}
+
+		//make sure nums are within range
+		if (integers[0] > 3) {
+			theForm.error = `Error: minClasses must be 3 or less`
+			this.setState( { addClassForm: theForm } )
+			return
+		} else if (integers[1] < 1 || integers[1] > 3) {
+			theForm.error = `Error: maxClasses must be between 1 and 3 (incl)`
+			this.setState( { addClassForm: theForm } )
+			return
+		} else if (integers[2] < 1 || integers[2] < 1 ) {
+			theForm.error = `Error: minCampers and maxCampers both must be at least 1`
+			this.setState( { addClassForm: theForm } )
+			return
+		} else if (integers[0] > integers[1] || integers[2] > integers[3]){
+			theForm.error = `Error: mins must be less than respective maxes`
+			this.setState( { addClassForm: theForm } )
+			return
+		}
+
+		//tests passed
 		let newClasses = oldClasses
 		newClasses.push({
-			title: "Table Flipping",
-			min: 3,
-			max: 3
+			title: theForm.title,
+			desc: theForm.desc,
+			minClasses: Number(theForm.minClasses),
+			maxClasses: Number(theForm.maxClasses),
+			minCampers: Number(theForm.minCampers),
+			maxCampers: Number(theForm.maxCampers)
 		})
 		let response = await fetch('/classes', {
 			method: "POST",
@@ -43,8 +122,17 @@ class App extends React.Component {
 			},
 			body: JSON.stringify(newClasses)
 		});
-		if (response.ok) this.setState( { classes: newClasses } )
-		console.log(newClasses)
+		if (response.ok) {
+			for (let prop in theForm) theForm[prop] = ""
+			this.setState({
+				classes: newClasses,
+				addClassForm: theForm,
+				addingClass: false
+			})
+		} else {
+			theForm.error = "Error communicating with server"
+			this.setState( { addClassForm: theForm } )
+		}
 	}
 
 	displayClasses() {
@@ -88,29 +176,44 @@ class App extends React.Component {
 					<div style={{display: "flex", flexDirection: "column"}}>
 						<div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
 							<label>Title</label>
-							<input/>
+							<input name="title" onChange={this.handleInputChange}/>
 						</div>
 						<div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
 							<label>Description</label>
-							<input/>
+							<input name="desc" onChange={this.handleInputChange}/>
 						</div>
 						<div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
 							<label># of Classes</label>
 							<div>
-								<input type="number" className="num-input" min="1" max="3"/> - <input type="number" className="num-input" min="1" max="3"/>
+								<input
+									name="minClasses" onChange={this.handleInputChange}
+									type="number" className="num-input" min="0" max="3"
+								/>{" - "}
+								<input 
+									name="maxClasses" onChange={this.handleInputChange}
+									type="number" className="num-input" min="1" max="3"
+								/>
 							</div>
 						</div>
 						<div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
 							<label># of Campers</label>
 							<div>
-								<input type="number" className="num-input" min="2"/> - <input type="number" className="num-input"/>
+								<input
+									name="minCampers" onChange={this.handleInputChange}
+									type="number" className="num-input" min="1"
+								/>{" - "}
+								<input
+									name="maxCampers" onChange={this.handleInputChange}
+									type="number" className="num-input" min="1"
+								/>
 							</div>
 						</div>
 					</div>
 					<div>
-						<button style={{marginRight: "20px"}}>add</button>
+						<button onClick={this.handleAddClass} style={{marginRight: "20px"}}>add</button>
 						<button onClick={() => this.stateSwitch("addingClass")}>cancel</button>
 					</div>
+					<h4 style={{color: "red"}}>{this.state.addClassForm.error}</h4>
 				</div>
 			)
 		}
@@ -131,3 +234,10 @@ class App extends React.Component {
 }
 
 export default App;
+
+//new class fields
+//	*certs
+//	*id
+//  *double pd
+//  *enabled
+//disable async buttons while fetching
