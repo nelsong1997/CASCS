@@ -17,6 +17,7 @@ class App extends React.Component {
 		this.addClassSwitch = this.addClassSwitch.bind(this);
 		this.postNewClasses = this.postNewClasses.bind(this);
 		this.deleteClass = this.deleteClass.bind(this);
+		this.toggleClass = this.toggleClass.bind(this);
 	}
 
 	async componentDidMount () {
@@ -64,6 +65,18 @@ class App extends React.Component {
 		this.postNewClasses(newClasses)
 	}
 
+	toggleClass(classId) {
+		let oldClasses = this.state.classes
+		let toggleIndex;
+		for (let i=0; i<oldClasses.length; i++) {
+			if (oldClasses[i].id===classId) toggleIndex = i
+		}
+		let newClasses = oldClasses
+		newClasses[toggleIndex].enabled = !newClasses[toggleIndex].enabled
+		this.setState( { classes: newClasses } )
+		this.postNewClasses(newClasses)
+	}
+
 	render() {
 		let addClassButtons = [null, null]
 		if (!this.state.addingClass) addClassButtons = [
@@ -78,6 +91,7 @@ class App extends React.Component {
 					classes={this.state.classes}
 					classesLoading={this.state.classesLoading}
 					deleteClass={this.deleteClass}
+					toggleClass={this.toggleClass}
 				/>
 				{addClassButtons[1]}
 				<AddClassForm

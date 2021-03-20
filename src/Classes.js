@@ -11,23 +11,43 @@ class Classes extends React.Component {
         } else {
             let keyNum = 0
             for (let lesson of this.props.classes) { //class is a keyword :(
+                let fontStyle = null
+                let fontColor = "black"
+                let editButton = <button style={{marginLeft: "15px", alignSelf: "center"}}>edit</button>
+                let toggleText = "disable"
+                if (!lesson.enabled) {
+                    fontStyle = "italic"
+                    fontColor = "gray"
+                    editButton = null
+                    toggleText = "enable"
+                }
+                let doublePdText = null
+                if (lesson.doublePd) doublePdText = [
+                    <p key="0" style={{marginTop: "0px", fontStyle: fontStyle, color: fontColor}}>
+                        <strong>Double Period</strong>
+                    </p>
+                ]
                 theClasses.push(
                     <div key={keyNum++}>
                         <div style={{display: "flex"}}>
-                            <h3>{lesson.title}</h3>
-                            <button style={{marginLeft: "15px", alignSelf: "center"}}>edit</button>
-                            <button style={{marginLeft: "15px", alignSelf: "center"}}>disable</button>
+                            <h3 style={{fontStyle: fontStyle, color: fontColor}}>{lesson.title}</h3>
+                            {editButton}
+                            <button
+                                style={{marginLeft: "15px", alignSelf: "center"}}
+                                onClick={()=> this.props.toggleClass(lesson.id)}>{toggleText}
+                            </button>
                             <button
                                 style={{marginLeft: "15px", alignSelf: "center"}}
                                 onClick={() => this.props.deleteClass(lesson.id)}>delete
                             </button>
                         </div>
-                        <label><em>{lesson.desc}</em></label>
+                        {doublePdText}
+                        <label style={{fontStyle: fontStyle, color: fontColor}}><em>{lesson.desc}</em></label>
                         <div>
-                            <p>
+                            <p style={{fontStyle: fontStyle, color: fontColor}}>
                                 <strong># Classes:</strong> {lesson.minClasses}-{lesson.maxClasses}
                             </p>
-                            <p>
+                            <p style={{fontStyle: fontStyle, color: fontColor}}>
                                 <strong># Campers:</strong> {lesson.minCampers}-{lesson.maxCampers}
                             </p>
                         </div>

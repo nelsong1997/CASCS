@@ -5,30 +5,30 @@ class AddClassForm extends React.Component {
     constructor() {
         super()
         this.state = {
-            error: "",
-            title: "",
-            desc: "",
-            minClasses: "",
-            maxClasses: "",
-            minCampers: "",
-            doublePd: false
+            error: ""
         }
 
-        this.handleInputChange = this.handleInputChange.bind(this)
         this.checkNewClass = this.checkNewClass.bind(this);
+
+        this.title = React.createRef()
+        this.desc = React.createRef()
+        this.minClasses = React.createRef()
+        this.maxClasses = React.createRef()
+        this.minCampers = React.createRef()
+        this.maxCampers = React.createRef()
+        this.doublePd = React.createRef()
     }
 
-    handleInputChange(e) {
-        if (e.target.type==="checkbox") {
-            console.log(e.target, e.target.checked)
-            this.setState( { error: "", [e.target.name]: e.target.checked } )
-            return
-        }
-		this.setState( { error: "", [e.target.name]: e.target.value } )
-	}
-
     checkNewClass() {
-		let theForm = this.state
+		let theForm = {
+            title: this.title.current.value,
+            desc: this.desc.current.value,
+            minClasses: Number(this.minClasses.current.value),
+            maxClasses: Number(this.maxClasses.current.value),
+            minCampers: Number(this.minCampers.current.value),
+            maxCampers: Number(this.maxCampers.current.value),
+            doublePd: this.doublePd.current.checked
+        }
 		let oldClasses = this.props.classes
 
 		//check for empty fields
@@ -51,10 +51,10 @@ class AddClassForm extends React.Component {
 
 		//make sure numbers input are non negative ints
 		let integers = [
-			Number(theForm.minClasses),
-			Number(theForm.maxClasses),
-			Number(theForm.minCampers),
-			Number(theForm.maxCampers)
+			theForm.minClasses,
+			theForm.maxClasses,
+			theForm.minCampers,
+			theForm.maxCampers
 		]
 
 		for (let num of integers) {
@@ -105,21 +105,21 @@ class AddClassForm extends React.Component {
                 <div style={{display: "flex", flexDirection: "column"}}>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label>Title</label>
-                        <input name="title" onChange={this.handleInputChange}/>
+                        <input name="title" ref={this.title}/>
                     </div>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label>Description</label>
-                        <input name="desc" onChange={this.handleInputChange}/>
+                        <input name="desc" ref={this.desc}/>
                     </div>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label># of Classes</label>
                         <div>
                             <input
-                                name="minClasses" onChange={this.handleInputChange}
+                                name="minClasses" ref={this.minClasses}
                                 type="number" className="num-input" min="0" max="3"
                             />{" - "}
                             <input 
-                                name="maxClasses" onChange={this.handleInputChange}
+                                name="maxClasses" ref={this.maxClasses}
                                 type="number" className="num-input" min="1" max="3"
                             />
                         </div>
@@ -128,18 +128,18 @@ class AddClassForm extends React.Component {
                         <label># of Campers</label>
                         <div>
                             <input
-                                name="minCampers" onChange={this.handleInputChange}
+                                name="minCampers" ref={this.minCampers}
                                 type="number" className="num-input" min="1"
                             />{" - "}
                             <input
-                                name="maxCampers" onChange={this.handleInputChange}
+                                name="maxCampers" ref={this.maxCampers}
                                 type="number" className="num-input" min="1"
                             />
                         </div>
                     </div>
                     <div style={{marginBottom: "10px"}}>
                         <label>Double Period?
-                            <input type="checkbox" name="doublePd" onChange={this.handleInputChange}/>
+                            <input type="checkbox" name="doublePd" ref={this.doublePd}/>
                         </label>
                     </div>
                 </div>
