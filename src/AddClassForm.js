@@ -19,7 +19,7 @@ class AddClassForm extends React.Component {
         this.doublePd = React.createRef()
     }
 
-    checkNewClass() {
+    checkNewClass(editingId) {
 		let theForm = {
             title: this.title.current.value,
             desc: this.desc.current.value,
@@ -81,45 +81,74 @@ class AddClassForm extends React.Component {
 
 		//tests passed
 		let newClasses = oldClasses
-        let maxId = 0
-        for (let lesson of oldClasses) if (lesson.id > maxId) maxId = lesson.id
-		newClasses.push({
-			title: theForm.title,
-			desc: theForm.desc,
-			minClasses: Number(theForm.minClasses),
-			maxClasses: Number(theForm.maxClasses),
-			minCampers: Number(theForm.minCampers),
-			maxCampers: Number(theForm.maxCampers),
-            id: maxId + 1,
-            enabled: true,
-            doublePd: theForm.doublePd
-		})
+        if (editingId) {
+            let editingIndex;
+            for (let i=0; i<oldClasses; i++) if (oldClasses[i].id===editingId) { editingIndex = i; break; }
+            newClasses[editingIndex] = {
+                title: theForm.title,
+                desc: theForm.desc,
+                minClasses: theForm.minClasses,
+                maxClasses: theForm.maxClasses,
+                minCampers: theForm.minCampers,
+                maxCampers: theForm.maxCampers,
+                id: editingId,
+                enabled: true,
+                doublePd: theForm.doublePd
+            }
+        } else {
+            let maxId = 0
+            for (let lesson of oldClasses) if (lesson.id > maxId) maxId = lesson.id
+            newClasses.push({
+                title: theForm.title,
+                desc: theForm.desc,
+                minClasses: theForm.minClasses,
+                maxClasses: theForm.maxClasses,
+                minCampers: theForm.minCampers,
+                maxCampers: theForm.maxCampers,
+                id: maxId + 1,
+                enabled: true,
+                doublePd: theForm.doublePd
+            })
+        }
 		this.props.postNewClasses(newClasses)
 	}
 
 	render() {
         if (!this.props.addingClass) return null
+        let defaultValues = {}
+        let topText = "Add a class"
+        let editing = false
+        if (this.props.addFormPos > 0 && this.props.addFormPos < 9999) {
+            let classIndex;
+            for (let i=0; i<this.props.classes.length; i++) {
+                if (this.props.addFormPos===this.props.classes[i].id) classIndex = i
+                break;
+            }
+            defaultValues = this.props.classes[classIndex]
+            topText = "Edit class"
+            editing = this.props.addFormPos
+        }
         return (
             <div>
-                <h3 style={{marginTop: "40px"}}>Add a class</h3>
+                <h3 style={{marginTop: "40px"}}>{topText}</h3>
                 <div style={{display: "flex", flexDirection: "column"}}>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label>Title</label>
-                        <input name="title" ref={this.title}/>
+                        <input name="title" ref={this.title} defaultValue={defaultValues.title}/>
                     </div>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label>Description</label>
-                        <input name="desc" ref={this.desc}/>
+                        <input name="desc" ref={this.desc} defaultValue={defaultValues.desc}/>
                     </div>
                     <div style={{marginBottom: "10px", display: "flex", flexDirection: "column", alignSelf: "flex-start"}}>
                         <label># of Classes</label>
                         <div>
                             <input
-                                name="minClasses" ref={this.minClasses}
+                                name="minClasses" ref={this.minClasses} defaultValue={defaultValues.minClasses}
                                 type="number" className="num-input" min="0" max="3"
                             />{" - "}
                             <input 
-                                name="maxClasses" ref={this.maxClasses}
+                                name="maxClasses" ref={this.maxClasses} defaultValue={defaultValues.maxClasses}
                                 type="number" className="num-input" min="1" max="3"
                             />
                         </div>
@@ -128,23 +157,26 @@ class AddClassForm extends React.Component {
                         <label># of Campers</label>
                         <div>
                             <input
-                                name="minCampers" ref={this.minCampers}
+                                name="minCampers" ref={this.minCampers} defaultValue={defaultValues.minCampers}
                                 type="number" className="num-input" min="1"
                             />{" - "}
                             <input
-                                name="maxCampers" ref={this.maxCampers}
+                                name="maxCampers" ref={this.maxCampers} defaultValue={defaultValues.maxCampers}
                                 type="number" className="num-input" min="1"
                             />
                         </div>
                     </div>
                     <div style={{marginBottom: "10px"}}>
                         <label>Double Period?
-                            <input type="checkbox" name="doublePd" ref={this.doublePd}/>
+                            <input
+                                type="checkbox" name="doublePd" ref={this.doublePd}
+                                defaultChecked={defaultValues.doublePd}
+                            />
                         </label>
                     </div>
                 </div>
                 <div>
-                    <button onClick={this.checkNewClass} style={{marginRight: "20px"}}>add</button>
+                    <button onClick={() => this.checkNewClass(editing)} style={{marginRight: "20px"}}>save</button>
                     <button onClick={this.props.addClassSwitch}>cancel</button>
                 </div>
                 <h4 style={{color: "red"}}>{this.state.error}</h4>

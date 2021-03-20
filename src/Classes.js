@@ -1,9 +1,11 @@
 import React from 'react'
+import AddClassForm from './AddClassForm'
 import './styles.css'
 
 class Classes extends React.Component {
 	render() {
-        let theClasses = []
+        let topClasses = []
+        let bottomClasses = []
 		if (!this.props.classes.length && this.props.classesLoading) { 
             return <p>Loading classes...</p>
         } else if (!this.props.classes.length && !this.props.classesLoading) {
@@ -13,7 +15,12 @@ class Classes extends React.Component {
             for (let lesson of this.props.classes) { //class is a keyword :(
                 let fontStyle = null
                 let fontColor = "black"
-                let editButton = <button style={{marginLeft: "15px", alignSelf: "center"}}>edit</button>
+                let editButton = [
+                    <button 
+                        key="0" style={{marginLeft: "15px", alignSelf: "center"}}
+                        onClick={()=>this.props.addClassSwitch(lesson.id)}>edit
+                    </button>
+                ]
                 let toggleText = "disable"
                 if (!lesson.enabled) {
                     fontStyle = "italic"
@@ -27,7 +34,7 @@ class Classes extends React.Component {
                         <strong>Double Period</strong>
                     </p>
                 ]
-                theClasses.push(
+                let theLesson = [
                     <div key={keyNum++}>
                         <div style={{display: "flex"}}>
                             <h3 style={{fontStyle: fontStyle, color: fontColor}}>{lesson.title}</h3>
@@ -52,12 +59,22 @@ class Classes extends React.Component {
                             </p>
                         </div>
                     </div>
-                )
+                ]
+                if (lesson.id < this.props.addFormPos) topClasses.push(theLesson)
+                else if (lesson.id > this.props.addFormPos) bottomClasses.push(theLesson)
             }
             return (
                 <div>
                     <h2 style={{marginBottom: "0px"}}>Classes List</h2>
-                    {theClasses}
+                    {topClasses}
+                    <AddClassForm
+                        classes={this.props.classes}
+                        addingClass={this.props.addingClass}
+                        postNewClasses={this.props.postNewClasses}
+                        addClassSwitch={this.props.addClassSwitch}
+                        addFormPos={this.props.addFormPos}
+                    />
+                    {bottomClasses}
                 </div>
             )
         }		

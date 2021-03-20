@@ -1,6 +1,5 @@
 import React from 'react'
 import Classes from './Classes.js'
-import AddClassForm from './AddClassForm.js'
 import './styles.css'
 
 class App extends React.Component {
@@ -9,7 +8,6 @@ class App extends React.Component {
 		this.state = {
 			classes: [],
 			addingClass: false,
-			editingClass: false,
 			classesLoading: true,
 			addFormPos: 0
 		}
@@ -44,14 +42,16 @@ class App extends React.Component {
 				classes: newClasses,
 				addingClass: false,
 				editingClass: false,
-				classesLoading: false
+				classesLoading: false,
+				addFormPos: 0
 			})
 		} //else?
 	}
 
 	addClassSwitch(pos) {
-		if (pos || pos===0) this.setState( { addFormPos: pos } )
-		this.setState( { addingClass: !this.state.addingClass } )
+		let position = 0
+		if ((pos && typeof(pos)==="number")) position = pos
+		this.setState( { addingClass: !this.state.addingClass, addFormPos: position } )
 	}
 
 	deleteClass(deleteId) {
@@ -92,14 +92,12 @@ class App extends React.Component {
 					classesLoading={this.state.classesLoading}
 					deleteClass={this.deleteClass}
 					toggleClass={this.toggleClass}
-				/>
-				{addClassButtons[1]}
-				<AddClassForm
-					classes={this.state.classes}
 					addingClass={this.state.addingClass}
 					postNewClasses={this.postNewClasses}
 					addClassSwitch={this.addClassSwitch}
+					addFormPos={this.state.addFormPos}
 				/>
+				{addClassButtons[1]}
 			</div>
 		)
 	}
