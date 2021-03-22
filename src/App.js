@@ -98,6 +98,20 @@ class App extends React.Component {
 					addFormPos={this.state.addFormPos}
 				/>
 				{addClassButtons[1]}
+				<div>
+					<input type="file" id="hi"/>
+					<button onClick={()=>{
+						let theFile = document.getElementById("hi").files[0]
+						console.log(theFile)
+						let betterFile = new File([theFile], "download.csv", {type: "text/csv", webkitRelativePath: "../public"})
+						console.log(betterFile)
+						let urlThing = URL.createObjectURL(betterFile) //at this point i dont think im supposed to even use this func
+						let anchor = document.createElement("a")
+						anchor.href = urlThing
+						anchor.textContent = "hello"
+						document.getElementById("root").appendChild(anchor)
+					}}>click me</button>
+				</div>
 			</div>
 		)
 	}
