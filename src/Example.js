@@ -22,8 +22,7 @@ class Example extends React.Component {
             return
         }
 
-        let table = []
-        let headerRow = [
+        let table = [[
             "First Name",
             "Last Name",
             "Cabin",
@@ -32,8 +31,7 @@ class Example extends React.Component {
             "Choice 3",
             "Choice 4",
             "Choice 5"
-        ]
-        table[0] = headerRow
+        ]]
 
         populateVillageRows(cabins.mehkoa, 6)
         populateVillageRows(cabins.tamakwa, 6)
