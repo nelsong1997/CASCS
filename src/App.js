@@ -1,5 +1,6 @@
 import React from 'react'
 import Classes from './Classes.js'
+import Example from './Example.js'
 import './styles.css'
 
 class App extends React.Component {
@@ -86,32 +87,23 @@ class App extends React.Component {
 		return (
 			<div>
 				<h1>CASCS: Camp Abnaki Skill Class Scheduler</h1>
-				{addClassButtons[0]}
-				<Classes
-					classes={this.state.classes}
-					classesLoading={this.state.classesLoading}
-					deleteClass={this.deleteClass}
-					toggleClass={this.toggleClass}
-					addingClass={this.state.addingClass}
-					postNewClasses={this.postNewClasses}
-					addClassSwitch={this.addClassSwitch}
-					addFormPos={this.state.addFormPos}
-				/>
-				{addClassButtons[1]}
 				<div>
-					<input type="file" id="hi"/>
-					<button onClick={()=>{
-						let theFile = document.getElementById("hi").files[0]
-						console.log(theFile)
-						let betterFile = new File([theFile], "download.csv", {type: "text/csv", webkitRelativePath: "../public"})
-						console.log(betterFile)
-						let urlThing = URL.createObjectURL(betterFile) //at this point i dont think im supposed to even use this func
-						let anchor = document.createElement("a")
-						anchor.href = urlThing
-						anchor.textContent = "hello"
-						document.getElementById("root").appendChild(anchor)
-					}}>click me</button>
+					{addClassButtons[0]}
+					<Classes
+						classes={this.state.classes}
+						classesLoading={this.state.classesLoading}
+						deleteClass={this.deleteClass}
+						toggleClass={this.toggleClass}
+						addingClass={this.state.addingClass}
+						postNewClasses={this.postNewClasses}
+						addClassSwitch={this.addClassSwitch}
+						addFormPos={this.state.addFormPos}
+					/>
+					{addClassButtons[1]}
 				</div>
+				<Example
+					classes={this.state.classes}
+				/>
 			</div>
 		)
 	}
