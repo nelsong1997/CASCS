@@ -2,17 +2,25 @@ import React from 'react'
 import './styles.css'
 import names from './names.js'
 import cabins from './cabins.js'
+import Papa from 'papaparse'
 
 class Example extends React.Component {
     constructor() {
         super()
-        this.state = {}
+        this.state = {
+            result: null
+        }
 
         this.generate = this.generate.bind(this)
     }
 
     generate() {
-        const classes = this.props.classes
+        const classTitles = this.props.classes.map(lesson => lesson.title)
+
+        if (classTitles.length < 5) {
+            console.log("not enough classes.")
+            return
+        }
 
         let table = []
         let headerRow = [
@@ -32,7 +40,11 @@ class Example extends React.Component {
         populateVillageRows(cabins.madewehsoos, 8)
         populateVillageRows(cabins.chippewadchu, 10)
 
-        console.log(table)
+        let csv = Papa.unparse(table)
+
+        // console.log(encodeURIComponent(csv))
+
+        this.setState( { result: encodeURIComponent(csv) } )
 
         function populateVillageRows(village, numCampers) {
             function randomValueFromArray(array) {
@@ -40,23 +52,23 @@ class Example extends React.Component {
                 return array[index]
             }
 
-            function removeFromArray(index, array) {
-                return array.slice(0, index).concat(array.slice(index + 1), array.length)
+            function removeItemFromArray(item, array) {
+                let index = array.indexOf(item)
+                return array.slice(0, index).concat(array.slice((index + 1), array.length))
             }
-
-            console.log(removeFromArray(2, ["Apple", "Banana", "Lemon", "Cheese"]))
 
             for (let cabin of village) {
                 for (let i=0; i<numCampers; i++) {
+                    let classTitlesCopy = classTitles.slice(0)
                     let newRow = []
                     newRow[0] = randomValueFromArray(names.first)
                     newRow[1] = randomValueFromArray(names.last)
                     newRow[2] = cabin
-                    newRow[3] = randomValueFromArray(classes).title //change so we can't repeat
-                    newRow[4] = randomValueFromArray(classes).title
-                    newRow[5] = randomValueFromArray(classes).title
-                    newRow[6] = randomValueFromArray(classes).title
-                    newRow[7] = randomValueFromArray(classes).title
+                    for (let i=0; i<5; i++) {
+                        let chosenClass = randomValueFromArray(classTitlesCopy)
+                        classTitlesCopy = removeItemFromArray(chosenClass, classTitlesCopy)
+                        newRow[i+3] = chosenClass
+                    }
                     table.push(newRow)
                 }
             }
@@ -65,9 +77,18 @@ class Example extends React.Component {
     }
 
 	render() {
+        let theButton = <button onClick={this.generate}>generate example</button>
+        if (this.state.result) theButton = [
+            <button key="0">
+                <a 
+                    href={`data:text/plain;charset=utf-8,${this.state.result}`}
+                    download="example.csv"
+                >download example</a>
+            </button>
+        ]
         return(
             <div style={{marginTop: "20px"}}>
-                <button onClick={this.generate}>generate example</button>
+                {theButton}
             </div>
         )
     }
