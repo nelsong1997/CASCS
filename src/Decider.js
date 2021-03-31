@@ -28,6 +28,7 @@ class Decider extends React.Component {
         //0a. check to make sure there is enough raw space in the classes to handle all campers.
         //0b. check to make sure that any classes that must take place (min!==0) have enough campers signed up
         //0c. check no classes have the same name (do elsewhere?)
+        //0d. prune disabled classes
         //1. setup
         //1a. randomize camper list
         //2. fill adjoined classes
@@ -51,6 +52,7 @@ class Decider extends React.Component {
         if (this.state.file) theButton = <button onClick={this.assign}>assign classes</button>
         return(
             <div style={{marginTop: "20px"}}>
+                <h3>Class Assigner</h3>
                 {theButton}
                 <h4 style={{color: "red"}}>{this.state.error}</h4>
             </div>
