@@ -20,6 +20,7 @@ class AddClassForm extends React.Component {
     }
 
     checkNewClass(editingId) {
+        this.setState( { error: "" } )
 		let theForm = {
             title: this.title.current.value,
             desc: this.desc.current.value,
@@ -83,7 +84,17 @@ class AddClassForm extends React.Component {
 		let newClasses = oldClasses
         if (editingId) {
             let editingIndex;
-            for (let i=0; i<oldClasses; i++) if (oldClasses[i].id===editingId) { editingIndex = i; break; }
+            for (let i=0; i<oldClasses.length; i++) {
+                if (oldClasses[i].id===editingId) {
+                    editingIndex = i
+                    console.log("editing index: ", editingIndex)
+                    break
+                }
+            }
+            if (editingIndex===undefined) {
+                console.log("err: can't find the class you're editing")
+                return
+            }
             newClasses[editingIndex] = {
                 title: theForm.title,
                 desc: theForm.desc,
@@ -121,8 +132,10 @@ class AddClassForm extends React.Component {
         if (this.props.addFormPos > 0 && this.props.addFormPos < 9999) {
             let classIndex;
             for (let i=0; i<this.props.classes.length; i++) {
-                if (this.props.addFormPos===this.props.classes[i].id) classIndex = i
-                break;
+                if (this.props.addFormPos===this.props.classes[i].id) {
+                    classIndex = i
+                    break;
+                }
             }
             defaultValues = this.props.classes[classIndex]
             topText = "Edit class"

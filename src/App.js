@@ -1,6 +1,7 @@
 import React from 'react'
 import Classes from './Classes.js'
 import Example from './Example.js'
+import Decider from './Decider.js'
 import './styles.css'
 
 class App extends React.Component {
@@ -30,6 +31,7 @@ class App extends React.Component {
 	}
 
 	async postNewClasses(newClasses) { //all classes + new ones
+		console.log(newClasses)
 		this.setState( { classesLoading: true } )
 		let response = await fetch('/classes', {
 			method: "POST",
@@ -46,7 +48,7 @@ class App extends React.Component {
 				classesLoading: false,
 				addFormPos: 0
 			})
-		} //else?
+		} else console.log('err: bad post response')
 	}
 
 	addClassSwitch(pos) {
@@ -102,6 +104,9 @@ class App extends React.Component {
 					{addClassButtons[1]}
 				</div>
 				<Example
+					classes={this.state.classes}
+				/>
+				<Decider
 					classes={this.state.classes}
 				/>
 			</div>

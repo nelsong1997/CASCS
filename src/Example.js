@@ -40,7 +40,8 @@ class Example extends React.Component {
 
         let csv = Papa.unparse(table)
 
-        // console.log(encodeURIComponent(csv))
+        let file = new File([csv], "text.csv")
+        console.log(file)
 
         this.setState( { result: encodeURIComponent(csv) } )
 
