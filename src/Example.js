@@ -15,6 +15,7 @@ class Example extends React.Component {
     }
 
     generate() {
+        //need to prune for disabled classes.
         const classTitles = this.props.classes.map(lesson => lesson.title)
 
         if (classTitles.length < 5) {

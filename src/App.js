@@ -31,7 +31,6 @@ class App extends React.Component {
 	}
 
 	async postNewClasses(newClasses) { //all classes + new ones
-		console.log(newClasses)
 		this.setState( { classesLoading: true } )
 		let response = await fetch('/classes', {
 			method: "POST",
