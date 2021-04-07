@@ -33,7 +33,7 @@ class Decider extends React.Component {
     }
 
     assign() {
-        let table = this.state.file
+        let table = this.state.file //rename this variable
         let theClasses = this.props.classes
         this.setState( { error: "" } )
         //rough draft alg.
@@ -105,12 +105,79 @@ class Decider extends React.Component {
         //1. setup
         //1a. randomize camper list
         //there are better ways to do this
-        for (let camper of table) camper.roll = Math.random()
-        table.sort((a,b) => a.roll - b.roll)
-        //how random is this method? would be interesting to graph rolls.
+        for (let i=0; i<table.length; i++) {
+            table[i].sortNum = Math.random()
+            table[i].id = i
+        }
+        table.sort((a,b) => a.sortNum - b.sortNum)
+        //how random is this method? would be interesting to graph nums.
         
         //2. fill adjoined classes
+        let classTable = [] //creating these additional tables may be unnecessary
+        for (let i=0; i<theClasses.length; i++) {
+            let theClass = theClasses[i]
+            if (!theClass.enabled) continue
+            classTable.push({
+                id: theClass.id,
+                title: theClass.title,
+                totalMaxCampers: theClass.maxCampers * theClass.maxClasses,
+                allCampers: [],
+                pd1Campers: [],
+                pd2Campers: [],
+                pd3Campers: []
+            })
+        }
+
+        let classIndicesByName = {}
+        for (let i=0; i<classTable.length; i++) classIndicesByName[classTable[i].title] = i
+
+        let camperTable = []
+        for (let i=0; i<table.length; i++) {
+            let theCamper = table[i]
+            camperTable.push({
+                id: theCamper.id,
+                name: theCamper["First Name"] + " " + theCamper["Last Name"],
+                choiceIndices: [
+                    classIndicesByName[theCamper["Choice 1"]],
+                    classIndicesByName[theCamper["Choice 2"]],
+                    classIndicesByName[theCamper["Choice 3"]],
+                    classIndicesByName[theCamper["Choice 4"]],
+                    classIndicesByName[theCamper["Choice 5"]]
+                ],
+                allClasses: [],
+                pd1Class: null,
+                pd2Class: null,
+                pd3Class: null
+            })
+        }
+
         //2a. lumping each class together with all its periods, go thru random list and add campers to classes
+        for (let pd=0; pd<3; pd++) {
+            let camperCounter = 0
+            for (let camper of camperTable) {
+                for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
+                    let classIndex = camper.choiceIndices[choiceIndex]
+                    if (
+                        (classTable[classIndex].allCampers.length <
+                        classTable[classIndex].totalMaxCampers) &&
+                        !camper.allClasses.includes(classTable[classIndex].id)
+                    ) {
+                        classTable[classIndex].allCampers.push(camper)
+                        camper.allClasses.push(classTable[classIndex].id)
+                        break
+                    }
+                    if (choiceIndex===4) {
+                        let totalClasses = camperTable.length * 3
+                        let completion = (pd * camperTable.length) + camperCounter
+                        console.log(camperTable, classTable, camper, `${completion}/${totalClasses}`)
+                        return
+                    }
+                }
+                camperCounter++
+            }
+        }
+        console.log(camperTable, classTable)
+        return
         // by their top pref. if top pref is full go to next highest.
         //2b. when even the bottom pref is full, will have to trade. go back to top unused pref and choose random from
         // that class and pick a new class for that person (this does not necessarily terminate! cap it)
