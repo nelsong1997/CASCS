@@ -152,10 +152,12 @@ class Decider extends React.Component {
         }
 
         //2a. lumping each class together with all its periods, go thru random list and add campers to classes
+        // let assignmentsTable = []
+        // let camperCounter = 0
         for (let pd=0; pd<3; pd++) {
-            let camperCounter = 0
             for (let camper of camperTable) {
-                for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
+                let stuck = false;
+                for (let choiceIndex=0; choiceIndex<5; choiceIndex++) { //choice index 0 == camper's first choice
                     let classIndex = camper.choiceIndices[choiceIndex]
                     if (
                         (classTable[classIndex].allCampers.length <
@@ -167,16 +169,58 @@ class Decider extends React.Component {
                         break
                     }
                     if (choiceIndex===4) {
-                        let totalClasses = camperTable.length * 3
-                        let completion = (pd * camperTable.length) + camperCounter
-                        console.log(camperTable, classTable, camper, `${completion}/${totalClasses}`)
-                        return
+                        stuck = true
+                        //for all camper's choices they are already in the class
+                        //or the class is full
+                        
+                        // let totalClasses = camperTable.length * 3
+                        // let completion = (pd * camperTable.length) + camperCounter
+                        // console.log(camperTable, classTable, camper, `${completion}/${totalClasses}`)
+                        // return
                     }
                 }
-                camperCounter++
+                if (stuck) {
+                    let targetClass = null;
+                    for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
+                        let classIndex = camper.choiceIndices[choiceIndex]
+                        //we need to find the first class they chose that they aren't already in
+                        if (camper.allClasses.includes(classIndex)) continue;
+                        //we found it; now let's kick a camper out of that class,
+                        //so long as that camper can join another class that they chose
+                        targetClass = classTable[classIndex]
+                    }
+                    let targetCampers = targetClass.allCampers
+                    for (let innerCamper of targetCampers) {
+                        //have to find full camper data from camper table
+                        //this is bad because data is poorly constructed
+                        let fullCamper;
+                        for (let i=0; i<camperTable.legnth; i++) {
+                            let camper_ = camperTable[i]
+                            if (camper_.id===innerCamper.id) {
+                                fullCamper = camper_
+                                fullCamper.index = i
+                            }
+                        }
+                        //find a class they are not in
+                        for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
+                            let classIndex = camper.choiceIndices[choiceIndex]
+                            let theClass = classTable[classIndex]
+                            if (
+                                !fullCamper.allClasses.includes(classIndex) &&
+                                theClass.totalMaxCampers > theClass.allCampers.length
+                            ) { //camper is not in this other class, and this other class is not full
+                                //this means we should switch this camper to the other class
+                                //and move the current camper in the main loop to replace
+                                classTable[classIndex].allCampers.push(fullCamper)
+                                camperTable[fullCamper.index].allClasses.push()
+                            }
+                        }
+                    }
+                }
+                // camperCounter++
             }
         }
-        console.log(camperTable, classTable)
+        // console.log(`${camperCounter}/${camperTable.length * 3}`, camperTable, classTable, unassignedCampers)
         return
         // by their top pref. if top pref is full go to next highest.
         //2b. when even the bottom pref is full, will have to trade. go back to top unused pref and choose random from
