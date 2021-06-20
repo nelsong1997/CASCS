@@ -119,12 +119,9 @@ class Decider extends React.Component {
             if (!theClass.enabled) continue
             classTable.push({
                 id: theClass.id,
+                index: classTable.length, //combine this w id?
                 title: theClass.title,
-                totalMaxCampers: theClass.maxCampers * theClass.maxClasses,
-                allCampers: [],
-                pd1Campers: [],
-                pd2Campers: [],
-                pd3Campers: []
+                totalMaxCampers: theClass.maxCampers * theClass.maxClasses
             })
         }
 
@@ -136,6 +133,7 @@ class Decider extends React.Component {
             let theCamper = table[i]
             camperTable.push({
                 id: theCamper.id,
+                index: camperTable.length,
                 name: theCamper["First Name"] + " " + theCamper["Last Name"],
                 choiceIndices: [
                     classIndicesByName[theCamper["Choice 1"]],
@@ -144,87 +142,101 @@ class Decider extends React.Component {
                     classIndicesByName[theCamper["Choice 4"]],
                     classIndicesByName[theCamper["Choice 5"]]
                 ],
-                allClasses: [],
-                pd1Class: null,
-                pd2Class: null,
-                pd3Class: null
             })
         }
 
+        function getCampersInClass(assignments, classIndex) {
+            let thing = assignments.filter(
+                assignment => assignment.classIndex===classIndex
+            ).map(assignment => assignment.camperIndex)
+            if (thing===undefined) console.log(assignments, classIndex)
+            return thing
+        }
+
+        function getCamperClasses(assignments, camperIndex) {
+            return assignments.filter(
+                assignment => assignment.camperIndex===camperIndex
+            ).map(assignment => assignment.classIndex)
+        }
+
+        function getAssignmentIndex(assignments, camperIndex, classIndex) {
+            return assignments.findIndex(assignment => 
+                assignment.camperIndex===camperIndex && assignment.classIndex===classIndex
+                )
+            }
+            
         //2a. lumping each class together with all its periods, go thru random list and add campers to classes
-        // let assignmentsTable = []
+        // by their top pref. if top pref is full go to next highest.
+        let assignmentsTable = []
         // let camperCounter = 0
         for (let pd=0; pd<3; pd++) {
             for (let camper of camperTable) {
-                let stuck = false;
                 for (let choiceIndex=0; choiceIndex<5; choiceIndex++) { //choice index 0 == camper's first choice
                     let classIndex = camper.choiceIndices[choiceIndex]
                     if (
-                        (classTable[classIndex].allCampers.length <
-                        classTable[classIndex].totalMaxCampers) &&
-                        !camper.allClasses.includes(classTable[classIndex].id)
+                        (getCampersInClass(assignmentsTable, classIndex).length <
+                        classTable[classIndex].totalMaxCampers) && //all 3 pds not full
+                        !getCamperClasses(assignmentsTable, camper.index).includes(classIndex) //camper not already in class
                     ) {
-                        classTable[classIndex].allCampers.push(camper)
-                        camper.allClasses.push(classTable[classIndex].id)
+                        assignmentsTable.push({
+                            index: assignmentsTable.length,
+                            camperIndex: camper.index,
+                            classIndex: classIndex
+                        })
                         break
                     }
+                    let success = false
+                    
+                    //2b. when even the bottom pref is full, will have to trade. go back to top unused pref and pick from
+                    // that class and pick a new class for that person
                     if (choiceIndex===4) {
-                        stuck = true
-                        //for all camper's choices they are already in the class
+                        //for all camper's choices, they are already in the class
                         //or the class is full
-                        
-                        // let totalClasses = camperTable.length * 3
-                        // let completion = (pd * camperTable.length) + camperCounter
-                        // console.log(camperTable, classTable, camper, `${completion}/${totalClasses}`)
-                        // return
-                    }
-                }
-                if (stuck) {
-                    let targetClass = null;
-                    for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
-                        let classIndex = camper.choiceIndices[choiceIndex]
-                        //we need to find the first class they chose that they aren't already in
-                        if (camper.allClasses.includes(classIndex)) continue;
-                        //we found it; now let's kick a camper out of that class,
-                        //so long as that camper can join another class that they chose
-                        targetClass = classTable[classIndex]
-                    }
-                    let targetCampers = targetClass.allCampers
-                    for (let innerCamper of targetCampers) {
-                        //have to find full camper data from camper table
-                        //this is bad because data is poorly constructed
-                        let fullCamper;
-                        for (let i=0; i<camperTable.legnth; i++) {
-                            let camper_ = camperTable[i]
-                            if (camper_.id===innerCamper.id) {
-                                fullCamper = camper_
-                                fullCamper.index = i
+                        let camperClasses = getCamperClasses(assignmentsTable, camper.index)
+                        let otherChoices = camper.choiceIndices.filter(index => !camperClasses.includes(index))
+                        for (let otherChoice of otherChoices) {
+                            //look at every other chosen class camper is not in to look for a class that has a camper to swap with
+                            let targetCampers = getCampersInClass(assignmentsTable, otherChoice)
+                            for (let camperIndex of targetCampers) {
+                                //look at every camper in the class to see who could move
+                                //consider randomizing
+                                let targetCamperClasses = getCamperClasses(assignmentsTable, camperIndex)
+                                //look at their choices but only the ones they're not already in
+                                let pontentialNewClasses = camperTable[camperIndex].choiceIndices.filter(
+                                    lessonIndex => !targetCamperClasses.includes(lessonIndex)
+                                )
+                                for (let newClass of pontentialNewClasses) {
+                                    let camperCount = getCampersInClass(assignmentsTable, newClass).length
+                                    if (camperCount < classTable[newClass].totalMaxCampers) {
+                                        //swap
+                                        //change other camper
+                                        let assignmentIndex = getAssignmentIndex(assignmentsTable, camperIndex, otherChoice)
+                                        assignmentsTable[assignmentIndex].classIndex = newClass
+                                        //add assignment for our main camper
+                                        assignmentsTable.push({
+                                            index: assignmentsTable.length,
+                                            camperIndex: camper.index,
+                                            classIndex: otherChoice
+                                        })
+                                        success = true
+                                        break
+                                    }
+                                }
+                                if (success) break; //clean up
                             }
+                            if (success) break;
                         }
-                        //find a class they are not in
-                        for (let choiceIndex=0; choiceIndex<5; choiceIndex++) {
-                            let classIndex = camper.choiceIndices[choiceIndex]
-                            let theClass = classTable[classIndex]
-                            if (
-                                !fullCamper.allClasses.includes(classIndex) &&
-                                theClass.totalMaxCampers > theClass.allCampers.length
-                            ) { //camper is not in this other class, and this other class is not full
-                                //this means we should switch this camper to the other class
-                                //and move the current camper in the main loop to replace
-                                classTable[classIndex].allCampers.push(fullCamper)
-                                camperTable[fullCamper.index].allClasses.push()
-                            }
+                        if (!success) {
+                            console.log("could not assign everyone", assignmentsTable)
+                            return
                         }
                     }
                 }
-                // camperCounter++
             }
         }
-        // console.log(`${camperCounter}/${camperTable.length * 3}`, camperTable, classTable, unassignedCampers)
+        console.log(assignmentsTable)
         return
-        // by their top pref. if top pref is full go to next highest.
-        //2b. when even the bottom pref is full, will have to trade. go back to top unused pref and choose random from
-        // that class and pick a new class for that person (this does not necessarily terminate! cap it)
+        
         //3. split classes into pds.
         //3a. start with biggest class, set to pd = 1. Then find another class with the most campers from biggest class.
         // set to pd = 2. then another class with the most from the gp set to pd = 3. Repeat, alternating between fwd and
