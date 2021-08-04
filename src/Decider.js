@@ -121,7 +121,10 @@ class Decider extends React.Component {
                 id: theClass.id,
                 index: classTable.length, //combine this w id?
                 title: theClass.title,
-                totalMaxCampers: theClass.maxCampers * theClass.maxClasses
+                totalMaxCampers: theClass.maxCampers * theClass.maxClasses,
+                maxCampers: theClass.maxCampers,
+                // minCampers: theClass.minCampers
+                maxClasses: theClass.maxClasses
             })
         }
 
@@ -162,13 +165,12 @@ class Decider extends React.Component {
         function getAssignmentIndex(assignments, camperIndex, classIndex) {
             return assignments.findIndex(assignment => 
                 assignment.camperIndex===camperIndex && assignment.classIndex===classIndex
-                )
-            }
+            )
+        }
             
         //2a. lumping each class together with all its periods, go thru random list and add campers to classes
         // by their top pref. if top pref is full go to next highest.
         let assignmentsTable = []
-        // let camperCounter = 0
         for (let pd=0; pd<3; pd++) {
             for (let camper of camperTable) {
                 for (let choiceIndex=0; choiceIndex<5; choiceIndex++) { //choice index 0 == camper's first choice
@@ -186,7 +188,7 @@ class Decider extends React.Component {
                         break
                     }
                     let success = false
-                    
+
                     //2b. when even the bottom pref is full, will have to trade. go back to top unused pref and pick from
                     // that class and pick a new class for that person
                     if (choiceIndex===4) {
@@ -234,11 +236,46 @@ class Decider extends React.Component {
                 }
             }
         }
-        console.log(assignmentsTable)
-        return
+
+        //figure out how many pds each class should have
+        //want to minimize number of classes
+        for (let lesson of classTable) {
+            let totalCampers = getCampersInClass(assignmentsTable, lesson.index).length
+            let numPds = Math.ceil(totalCampers/lesson.maxCampers)
+            classTable[lesson.index].numPds = numPds
+            classTable[lesson.index].avgCampersPerPd = totalCampers/numPds
+            //now check to make sure there aren't too many classes
+            if (numPds > lesson.maxClasses) {
+                console.log(`exception--too many classes for ${classTable[lesson.index]}`)
+            }
+        }
         
         //3. split classes into pds.
         //3a. start with biggest class, set to pd = 1. Then find another class with the most campers from biggest class.
+        //order classes by size
+        let sortedClasses = classTable.slice(0)
+        sortedClasses.sort((a, b) => b.avgCampersPerPd - a.avgCampersPerPd)
+        //fix indices of classTable
+        //take the biggest class
+        let class0 = sortedClasses[0]
+        //find the other class with the biggest intersection of campers
+        let class0Campers = getCampersInClass(assignmentsTable, class0.index)
+        let targetIndex = null
+        let targetCount = 0
+        for (let lesson of sortedClasses) {
+            if (lesson.id===class0.id) continue;
+            let theCampers = getCampersInClass(assignmentsTable, lesson.index)
+            let intersection = theCampers.filter(
+                camper => class0Campers.includes(camper)
+            )
+            if (targetIndex===null || intersection.length > targetCount) {
+                targetIndex = lesson.index
+                targetCount = intersection.length
+                console.log(targetIndex, targetCount)
+            }
+        }
+
+        console.log(class0, classTable[targetIndex], targetCount, class0Campers, getCampersInClass(assignmentsTable, targetIndex))
         // set to pd = 2. then another class with the most from the gp set to pd = 3. Repeat, alternating between fwd and
         // reverse (start w pd 3, then pd 1, etc).
         //3b. if class cannot be placed in a pd skip to next pd.

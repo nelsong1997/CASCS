@@ -1,1 +1,156 @@
-[{"title":"Survival","desc":"Trevor chases you with a sword. See if you can survive.","minClasses":0,"maxClasses":3,"minCampers":2,"maxCampers":30,"id":1,"enabled":true,"doublePd":false},{"title":"Sailing","desc":"Harness the winds and make boat go","minClasses":1,"maxClasses":2,"minCampers":2,"maxCampers":20,"id":2,"enabled":true,"doublePd":true},{"title":"Compost Management","desc":"Fight off those pesky raccoons","minClasses":0,"maxClasses":3,"minCampers":6,"maxCampers":25,"id":3,"enabled":true,"doublePd":false},{"title":"Cloud Watching","desc":"That one looks like uhhhh","minClasses":0,"maxClasses":1,"minCampers":2,"maxCampers":10,"id":4,"enabled":true,"doublePd":false},{"title":"Scuba Diving","desc":"Don't forget to pack oxygen","minClasses":0,"maxClasses":1,"minCampers":2,"maxCampers":7,"id":5,"enabled":true,"doublePd":false},{"title":"Sword Fighting","desc":"Self explanatory","minClasses":0,"maxClasses":3,"minCampers":4,"maxCampers":20,"id":6,"enabled":true,"doublePd":false},{"title":"Dodgeball","desc":"If you can dodge a wrench...","minClasses":0,"maxClasses":3,"minCampers":10,"maxCampers":30,"id":7,"enabled":true,"doublePd":false},{"title":"Find Luke","desc":"Where is he hiding?","minClasses":0,"maxClasses":3,"minCampers":5,"maxCampers":30,"id":8,"enabled":true,"doublePd":false},{"title":"Anthropology 306: Catland& the Virtue of Adventure","desc":"Embark on an analytical journey into the culture of Catland. Prerequisites: Dodgeball","minClasses":0,"maxClasses":1,"minCampers":2,"maxCampers":10,"id":9,"enabled":true,"doublePd":false},{"title":"Trevor Hunt","desc":"Counselor Hunt, except the counselor is just Trevor","minClasses":0,"maxClasses":3,"minCampers":5,"maxCampers":35,"id":10,"enabled":true,"doublePd":false},{"title":"Tennis","desc":"The sport","minClasses":0,"maxClasses":3,"minCampers":4,"maxCampers":12,"id":11,"enabled":true,"doublePd":false},{"title":"Cooking","desc":"Make 5 pretzels, 1 each day","minClasses":0,"maxClasses":3,"minCampers":2,"maxCampers":16,"id":12,"enabled":true,"doublePd":false},{"title":"Quantum Physics","desc":"No description","minClasses":0,"maxClasses":1,"minCampers":2,"maxCampers":16,"id":13,"enabled":true,"doublePd":false},{"title":"Cabin Building","desc":"Build the cabin you will sleep in. if u dont u sleep outside","minClasses":0,"maxClasses":3,"minCampers":1,"maxCampers":30,"id":14,"enabled":true,"doublePd":false}]
+[
+    {
+        "title": "Survival",
+        "desc": "Trevor chases you with a sword. See if you can survive.",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 2,
+        "maxCampers": 30,
+        "id": 1,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Sailing",
+        "desc": "Harness the winds and make boat go",
+        "minClasses": 1,
+        "maxClasses": 2,
+        "minCampers": 2,
+        "maxCampers": 20,
+        "id": 2,
+        "enabled": true,
+        "doublePd": true
+    },
+    {
+        "title": "Compost Management",
+        "desc": "Fight off those pesky raccoons",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 6,
+        "maxCampers": 25,
+        "id": 3,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Cloud Watching",
+        "desc": "That one looks like uhhhh",
+        "minClasses": 0,
+        "maxClasses": 1,
+        "minCampers": 2,
+        "maxCampers": 10,
+        "id": 4,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Scuba Diving",
+        "desc": "Don't forget to pack oxygen",
+        "minClasses": 0,
+        "maxClasses": 1,
+        "minCampers": 2,
+        "maxCampers": 7,
+        "id": 5,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Sword Fighting",
+        "desc": "Self explanatory",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 4,
+        "maxCampers": 20,
+        "id": 6,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Dodgeball",
+        "desc": "If you can dodge a wrench...",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 10,
+        "maxCampers": 30,
+        "id": 7,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Find Luke",
+        "desc": "Where is he hiding?",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 5,
+        "maxCampers": 30,
+        "id": 8,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Anthropology 306: Catland& the Virtue of Adventure",
+        "desc": "Embark on an analytical journey into the culture of Catland. Prerequisites: Dodgeball",
+        "minClasses": 0,
+        "maxClasses": 1,
+        "minCampers": 2,
+        "maxCampers": 10,
+        "id": 9,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Trevor Hunt",
+        "desc": "Counselor Hunt, except the counselor is just Trevor",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 5,
+        "maxCampers": 35,
+        "id": 10,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Tennis",
+        "desc": "The sport",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 4,
+        "maxCampers": 12,
+        "id": 11,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Cooking",
+        "desc": "Make 5 pretzels, 1 each day",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 2,
+        "maxCampers": 16,
+        "id": 12,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Quantum Physics",
+        "desc": "No description",
+        "minClasses": 0,
+        "maxClasses": 1,
+        "minCampers": 2,
+        "maxCampers": 16,
+        "id": 13,
+        "enabled": true,
+        "doublePd": false
+    },
+    {
+        "title": "Cabin Building",
+        "desc": "Build the cabin you will sleep in. if u dont u sleep outside",
+        "minClasses": 0,
+        "maxClasses": 3,
+        "minCampers": 1,
+        "maxCampers": 30,
+        "id": 14,
+        "enabled": true,
+        "doublePd": false
+    }
+]

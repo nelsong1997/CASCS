@@ -13,7 +13,8 @@ const cabins = {
         "Manito",
         "Ogista",
         "Onaganos",
-        "Otshata"
+        "Otshata",
+        //"Pelots"
     ],
     madewehsoos: [
         "Richelieu",
